@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Connection.Message;
+package Connection.common.Message;
 
-import Connection.Krypter.Hasher;
+import Connection.common.Krypter.Hasher;
 
 /**
  *
@@ -22,11 +22,12 @@ public class HighscoreMessage extends Message {
     
     public HighscoreMessage(String input){
         super(input);
+        initFromString(input);
     }
 
     @Override
     public String makeMessage() {
-        String erg = "";
+        String erg;
         erg = "benutzer:\"" + getBenutzer() + "\",passwort:\"" + getPasswort() + "\",punkte:\"" + punkte + "\"";
         String erg2 = erg + ",\"" + Hasher.ToMD5(erg) + "\"";
         return erg2;

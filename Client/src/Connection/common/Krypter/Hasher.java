@@ -1,4 +1,4 @@
-package Connection.Krypter;
+package Connection.common.Krypter;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;

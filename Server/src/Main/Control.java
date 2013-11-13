@@ -5,8 +5,8 @@
  */
 package Main;
 
-import Connection.Krypter.Hasher;
-import Connection.Message.Message;
+import Connection.common.Krypter.Hasher;
+import Connection.common.Message.Message;
 import Database.DB_Connect;
 import java.io.File;
 import java.math.BigInteger;

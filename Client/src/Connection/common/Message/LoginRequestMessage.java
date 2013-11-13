@@ -4,9 +4,9 @@
  * and open the template in the editor.
  */
 
-package Connection.Message;
+package Connection.common.Message;
 
-import Connection.Krypter.Hasher;
+import Connection.common.Krypter.Hasher;
 
 /**
  *
@@ -20,6 +20,7 @@ public class LoginRequestMessage extends Message{
 
     public LoginRequestMessage(String input){
         super(input);
+        initFromString(input);
     }
     @Override
     public String makeMessage() {

@@ -5,10 +5,10 @@
  */
 package Main;
 
-import Connection.Krypter.Krypt;
-import Connection.Message.HighscoreMessage;
-import Connection.Message.LoginRequestMessage;
-import Connection.Message.Message;
+import Connection.common.Krypter.Krypt;
+import Connection.common.Message.HighscoreMessage;
+import Connection.common.Message.LoginRequestMessage;
+import Connection.common.Message.Message;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -16,6 +16,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.security.Key;
+import java.sql.Connection;
 import java.util.ArrayList;
 import javax.crypto.KeyGenerator;
 
@@ -54,7 +55,7 @@ public class ServerReader extends Thread {
 
             pw.flush();
             System.out.println("Key gesendet...");
-            Connection.Krypter.Krypt crypt = new Krypt(aesKey, "AES");
+            Krypt crypt = new Krypt(aesKey, "AES");
             BufferedReader read_input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             System.out.println("Reader geöffnet...");
 
@@ -78,13 +79,13 @@ public class ServerReader extends Thread {
                             System.out.println(input);
                             HighscoreMessage m = new HighscoreMessage(input);
                             System.out.println("Message");
-                            if (!doEvent(0,m)) {
+                            if (!doEvent(0, m)) {
                                 break;
                             }
                         } else {
                             if (input.equals("loginrequest:")) {
                                 LoginRequestMessage m = new LoginRequestMessage(input);
-                                if (!doEvent(0,m)) {
+                                if (!doEvent(0, m)) {
                                     break;
                                 }
                             }

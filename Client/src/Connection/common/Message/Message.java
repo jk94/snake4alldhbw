@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Connection.Message;
+package Connection.common.Message;
 
-import Connection.Krypter.Hasher;
+import Connection.common.Krypter.Hasher;
 
 /**
  *

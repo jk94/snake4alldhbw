@@ -5,8 +5,8 @@
  */
 package Connection;
 
-import Connection.Message.Message;
-import Connection.Krypter.Krypt;
+import Connection.common.Message.Message;
+import Connection.common.Krypter.Krypt;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -68,7 +68,7 @@ public class Connect extends Thread {
                 SecretKey aesKey = new SecretKeySpec(encodedKey, "AES");
 
                 System.out.println("Key erstellt...");
-                Connection.Krypter.Krypt crypt = new Krypt(aesKey, "AES");
+                Connection.common.Krypter.Krypt crypt = new Krypt(aesKey, "AES");
 
                 PrintWriter write_output = new PrintWriter(socket.getOutputStream());
                 System.out.println("Ausgabe geöffnet...");

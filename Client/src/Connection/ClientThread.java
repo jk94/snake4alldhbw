@@ -1,7 +1,7 @@
 package Connection;
 
-import Connection.Message.Message;
-import Connection.Krypter.AES;
+import Connection.common.Message.Message;
+import Connection.common.Krypter.AES;
 import java.math.BigInteger;
 import java.net.*;
 import java.security.SecureRandom;
