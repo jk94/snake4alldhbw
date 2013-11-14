@@ -5,8 +5,8 @@
  */
 package Main;
 
-import Connection.common.Krypter.AES;
-import Connection.common.Krypter.Krypt;
+import Krypter.AES;
+import Krypter.Krypt;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;

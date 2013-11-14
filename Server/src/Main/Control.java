@@ -5,9 +5,9 @@
  */
 package Main;
 
-import Connection.common.Krypter.Hasher;
-import Connection.common.Message.Message;
+import Krypter.Hasher;
 import Database.DB_Connect;
+import Message.Message;
 import java.io.File;
 import java.math.BigInteger;
 import java.net.ServerSocket;

@@ -1,8 +1,7 @@
 package Standardpackage;
 
 import Connection.Connect;
-import Connection.common.Message.HighscoreMessage;
-import Connection.common.Message.Message;
+import Message.HighscoreMessage;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JOptionPane;

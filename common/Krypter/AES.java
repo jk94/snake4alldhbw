@@ -1,5 +1,5 @@
 
-package Connection.common.Krypter;
+package Krypter;
 
 /**
  *

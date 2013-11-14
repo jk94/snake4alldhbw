@@ -4,9 +4,9 @@
  * and open the template in the editor.
  */
 
-package Connection.common.Message;
+package Message;
 
-import Connection.common.Krypter.Hasher;
+import Krypter.Hasher;
 
 /**
  *
