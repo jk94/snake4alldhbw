@@ -35,7 +35,7 @@ public class LoginRequestMessage extends Message{
         setBenutzer(sp[1].split(":\"")[1]);
         setPasswort(sp[2].split(":\"")[1]);
         setRecieved(true);
-        setHash(sp[3].split(":\"")[1]);
+        setHash(sp[3].split("\"")[1]);
     }
     
 }

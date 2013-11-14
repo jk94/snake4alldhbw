@@ -64,7 +64,7 @@ public class Control {
                     /*SharedValue decrypt_key = new SharedValue();
                     ServerThreadclass stc = new ServerThreadclass(socket, pz, decrypt_key, 3);
                     KeyAustauschListe.add(stc);*/
-                    ServerReader sr = new ServerReader(socket, ServerReaderList);
+                    ServerReader sr = new ServerReader(socket, ServerReaderList, dbc);
                     ServerReaderList.add(sr);
                     sr.start();
                 } else {

@@ -147,15 +147,19 @@ public class MainGUI extends javax.swing.JFrame {
         }
         if (evt.getKeyCode() == KeyEvent.VK_LEFT) {
             dir = EnumDirection.LINKS;
+            System.out.println("Links");
         }
         if (evt.getKeyCode() == KeyEvent.VK_RIGHT) {
             dir = EnumDirection.RECHTS;
+            System.out.println("rechts");
         }
         if (evt.getKeyCode() == KeyEvent.VK_UP) {
             dir = EnumDirection.HOCH;
+            System.out.println("up");
         }
         if (evt.getKeyCode() == KeyEvent.VK_DOWN) {
             dir = EnumDirection.RUNTER;
+            System.out.println("down");
         }
 
         if (dir != null) {

@@ -5,6 +5,9 @@
  */
 package Main;
 
+import Database.DB_Connect;
+import Database.DB_Getter_Operations;
+import Krypter.Hasher;
 import Krypter.Krypt;
 import Message.HighscoreMessage;
 import Message.LoginRequestMessage;
@@ -27,10 +30,12 @@ public class ServerReader extends Thread {
 
     private Socket socket;
     private ArrayList<ServerReader> lsr;
+    private DB_Connect dbc;
 
-    public ServerReader(Socket socket, ArrayList<ServerReader> lsr) {
+    public ServerReader(Socket socket, ArrayList<ServerReader> lsr, DB_Connect dbc) {
         this.socket = socket;
         this.lsr = lsr;
+        this.dbc = dbc;
     }
 
     public void run() {
@@ -60,14 +65,11 @@ public class ServerReader extends Thread {
 
             String input = read_input.readLine();
             int leng = Integer.parseInt(input);
-            System.out.println(leng);
             input = "";
             int breaks = 0;
             pw = new PrintWriter(op);
             while (true) {
                 input = input + read_input.readLine();
-                System.out.println(input);
-                System.out.println(input.length());
                 if (input.length() >= leng - breaks) {
 
                     input = crypt.decrypt(input);
@@ -77,7 +79,10 @@ public class ServerReader extends Thread {
                             System.out.println("Lese Message...");
                             System.out.println(input);
                             HighscoreMessage m = new HighscoreMessage(input);
-                            System.out.println("Message");
+                            System.out.println("Message: ");
+                            System.out.println("Benuter: " + m.getBenutzer());
+                            System.out.println("PW: " + m.getPasswort());
+                            System.out.println("Punkte:" + m.getPunkte());
                             if (!doEvent(0, m)) {
                                 break;
                             }
@@ -98,8 +103,7 @@ public class ServerReader extends Thread {
             System.out.println("Schreibe fertig...");
 
             String returnmsg = crypt.encrypt("ok");
-            System.out.println(returnmsg.length());
-            System.out.println(returnmsg);
+
             pw.println(returnmsg.length());
             pw.println(returnmsg);
             pw.flush();
@@ -118,15 +122,41 @@ public class ServerReader extends Thread {
     }
 
     public boolean doEvent(int type, Message msg) {
+        if (isUnveraendert(msg)) {
+            switch (type) {
+                case 0:
+                    System.out.println("Highscore..");
+                    if (DB_Getter_Operations.isUserValid(dbc, msg.getBenutzer(), msg.getPasswort())) {
+                        break;
+                    }
+                case 1:
+                    System.out.println("Loginrequest");
+                    break;
+            }
+        }
+        return false;
+    }
+
+    private boolean isUnveraendert(int type, Message msg) {
+        boolean erg = false;
+        String hashit = "benutzer:\"" + msg.getBenutzer() + "\",passwort:\"" + msg.getPasswort() + "\",punkte:\"" /* + msg.getPunkte()*/ + "\"";
+        String check = Hasher.ToMD5(hashit);
         switch (type) {
             case 0:
                 System.out.println("Highscore..");
-                break;
+                if (DB_Getter_Operations.isUserValid(dbc, msg.getBenutzer(), msg.getPasswort())) {
+                    break;
+                }
             case 1:
                 System.out.println("Loginrequest");
                 break;
         }
-        return false;
+
+        if (check.equals(msg.getHash())) {
+            erg = true;
+        }
+
+        return erg;
     }
 
 }

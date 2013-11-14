@@ -72,18 +72,16 @@ public class Punkte {
         return zielZaehler;
     }
 
-    public void gameOver() {
-        if (JOptionPane.showConfirmDialog(null, "Willst du deine Punkte an die Highscore übermitteln?", "Highscore", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE) == 0) {
-            sendPunkte();
-        } else {
-            System.out.println(new HighscoreMessage("Jan", "12345",false, punktezaehler).makeMessage());
-        }
+    public void gameOver(String[] anmeldedaten) {
+        //if (JOptionPane.showConfirmDialog(null, "Willst du deine Punkte an die Highscore übermitteln?", "Highscore", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE) == 0) {
+            sendPunkte(anmeldedaten);
+        
 
     }
 
-    private void sendPunkte() {
+    private void sendPunkte(String[] anmeldedaten) {
 
-        Connect c = new Connect("127.0.0.1", 9876, new HighscoreMessage("jankoschkegooglemail.com", "ichmachemal ein ganz langes passwort damit der string auch schön lange wird",false, punktezaehler));
+        Connect c = new Connect("127.0.0.1", 9876, new HighscoreMessage(anmeldedaten[0], anmeldedaten[1], false, punktezaehler));
         c.start();
     }
 }

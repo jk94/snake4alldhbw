@@ -165,7 +165,7 @@ public class GameStatus {
         cnt.getZeichenControl().zeichneButton(themewechseln);
         cnt.getZeichenControl().zeichneButton(neuesSpiel);
         cnt.getZeichenControl().zeichneButton(exit);
-        cnt.getPunkte().gameOver();
+        cnt.getPunkte().gameOver(cnt.getAnmeldedaten());
     }
 
     public void startup() {

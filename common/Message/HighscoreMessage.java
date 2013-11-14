@@ -48,6 +48,6 @@ public class HighscoreMessage extends Message {
         setPasswort(sp[1].split(":\"")[1]);
         setPunkte(Integer.parseInt(sp[2].split(":\"")[1]));
         setRecieved(true);
-        setHash(sp[3].split(":\"")[1]);
+        setHash(sp[3].split("\"")[1]);
     }
 }

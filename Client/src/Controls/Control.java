@@ -59,10 +59,19 @@ public class Control {
         tcnt = new ThemeControl("resources//images//theme");
         zcnt = new Zeichencontrol(zeichenflaeche, pixelgroese, spielfeldX, spielfeldY, tcnt.getAktuellesTheme(), this);
         scnt = new SoundController(this);
-        readAnmeldedaten();
+        String[] amld = readAnmeldedaten();
+        user = amld[0];
+        pw = amld[1];
         
     }
 
+    public String[] getAnmeldedaten(){
+        String[] s = new String[2];
+        s[0] = user;
+        s[1] = pw;
+        return s;
+    }
+    
     public String[] readAnmeldedaten() {
         String[] erg = new String[2];
         File f = new File("resources//login");
