@@ -40,7 +40,7 @@ public class GameStatus {
         if (evt.getButton() == 1) {
             switch (GS) {
                 case GAMEOVER:
-                    if (!neuesSpiel.equals(null)) {
+                    if (neuesSpiel != null) {
                         if (neuesSpiel.clicked(evt)) {
                             cnt.neuesSpiel();
                             this.GS = EnumGameStatus.PLAYING;
@@ -48,13 +48,13 @@ public class GameStatus {
                             break;
                         }
                     }
-                    if (!exit.equals(null)) {
+                    if (exit != null) {
                         if (exit.clicked(evt)) {
                             System.exit(0);
                             break;
                         }
                     }
-                    if (!themewechseln.equals(null)) {
+                    if (themewechseln != null) {
                         if (themewechseln.clicked(evt)) {
                             cnt.getThemeControl().nextTheme();
                             cnt.getZeichenControl().setImg(cnt.getThemeControl().getAktuellesTheme());
@@ -67,19 +67,19 @@ public class GameStatus {
                     clickTestTon(evt);
                     break;
                 case PAUSE:
-                    if (!resume.equals(null)) {
+                    if (resume != null) {
                         if (resume.clicked(evt)) {
                             resume();
                             break;
                         }
                     }
-                    if (!exit.equals(null)) {
+                    if (exit != null) {
                         if (exit.clicked(evt)) {
                             System.exit(0);
                             break;
                         }
                     }
-                    if (!themewechseln.equals(null)) {
+                    if (themewechseln != null) {
                         if (themewechseln.clicked(evt)) {
                             cnt.getThemeControl().nextTheme();
                             cnt.getZeichenControl().setImg(cnt.getThemeControl().getAktuellesTheme());
@@ -95,7 +95,7 @@ public class GameStatus {
                     clickTestTon(evt);
                     break;
                 case START:
-                    if (!neuesSpiel.equals(null)) {
+                    if (neuesSpiel != null) {
                         if (neuesSpiel.clicked(evt)) {
                             cnt.neuesSpiel();
                             this.GS = EnumGameStatus.PLAYING;
@@ -103,14 +103,14 @@ public class GameStatus {
                             break;
                         }
                     }
-                    if (!exit.equals(null)) {
+                    if ( exit != null) {
                         if (exit.clicked(evt)) {
                             System.exit(0);
                             break;
                         }
 
                     }
-                    if (!themewechseln.equals(null)) {
+                    if (themewechseln != null) {
                         if (themewechseln.clicked(evt)) {
                             cnt.getThemeControl().nextTheme();
                             cnt.getZeichenControl().setImg(cnt.getThemeControl().getAktuellesTheme());
@@ -165,7 +165,7 @@ public class GameStatus {
         cnt.getZeichenControl().zeichneButton(themewechseln);
         cnt.getZeichenControl().zeichneButton(neuesSpiel);
         cnt.getZeichenControl().zeichneButton(exit);
-        cnt.getPunkte().gameOver(cnt.getAnmeldedaten());
+        cnt.getPunkte().gameOver(cnt.getAuthKey());
     }
 
     public void startup() {

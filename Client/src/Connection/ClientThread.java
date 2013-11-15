@@ -1,6 +1,6 @@
 package Connection;
 
-import Message.*;
+import MessagePackage.Message;
 import java.math.BigInteger;
 import java.net.*;
 import java.security.SecureRandom;

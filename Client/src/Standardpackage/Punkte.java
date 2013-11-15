@@ -1,10 +1,10 @@
 package Standardpackage;
 
 import Connection.Connect;
-import Message.HighscoreMessage;
+import MessagePackage.Enums.MessageType;
+import MessagePackage.Message;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.JOptionPane;
 import javax.swing.Timer;
 
 /*
@@ -72,16 +72,15 @@ public class Punkte {
         return zielZaehler;
     }
 
-    public void gameOver(String[] anmeldedaten) {
+    public void gameOver(String authkey) {
         //if (JOptionPane.showConfirmDialog(null, "Willst du deine Punkte an die Highscore übermitteln?", "Highscore", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE) == 0) {
-            sendPunkte(anmeldedaten);
-        
+        sendPunkte(authkey);
 
     }
 
-    private void sendPunkte(String[] anmeldedaten) {
-
-        Connect c = new Connect("127.0.0.1", 9876, new HighscoreMessage(anmeldedaten[0], anmeldedaten[1], false, punktezaehler));
+    private void sendPunkte(String authkey) {
+        Message m = new Message(MessageType.HIGHSCORE, authkey, false);
+        Connect c = new Connect("127.0.0.1", 9876, m);
         c.start();
     }
 }

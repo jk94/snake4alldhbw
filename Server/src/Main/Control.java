@@ -5,9 +5,7 @@
  */
 package Main;
 
-import Krypter.Hasher;
 import Database.DB_Connect;
-import Message.Message;
 import java.io.File;
 import java.math.BigInteger;
 import java.net.ServerSocket;
@@ -37,7 +35,7 @@ public class Control {
         //System.out.println(DB_Getter_Operations.isUserValid(dbc, "test@test.de", Connection.Krypter.Hasher.ToMD5("12345")));
         //byte[] b = AES.encrypt("benutzer:\"Jan\",passwort:\"827ccb0eea8a706c4c34a16891f84e7b\",punkte:\"8\",\"8bd77a9987bbc56bf2181928d2db068d\"".getBytes(), "1234567".getBytes());
         //decryptMessage(b, BigInteger.valueOf(1234567));
-
+        
         //Empfangener String entschlüsseln
         Message msg = decryptMessage(cryptmsg,"123456");
         //Überprüfe auf Unverändert
@@ -93,15 +91,6 @@ public class Control {
         //return erg;
     }*/
 
-    private boolean isUnveraendert(Message msg) {
-        boolean erg = false;
-        String hashit = "benutzer:\"" + msg.getBenutzer() + "\",passwort:\"" + msg.getPasswort() + "\",punkte:\"" /* + msg.getPunkte()*/ + "\"";
-        String check = Hasher.ToMD5(hashit);
-        if (check.equals(msg.getHash())) {
-            erg = true;
-        }
-
-        return erg;
-    }
+    
 
 }

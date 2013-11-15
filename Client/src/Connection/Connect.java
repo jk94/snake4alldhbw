@@ -5,14 +5,15 @@
  */
 package Connection;
 
+import Krypter.Hasher;
 import Krypter.Krypt;
-import Message.Message;
+import MessagePackage.Enums.MessageType;
+import MessagePackage.Message;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.math.BigInteger;
 import java.net.Socket;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -27,23 +28,38 @@ import javax.crypto.spec.SecretKeySpec;
  */
 public class Connect extends Thread {
 
-    private ClientThread c_thread;
-    private BigInteger key = null;
     private Message msg;
     private int port;
     private String ip;
+    private boolean waitforrequest = false;
+    private Socket socket = null;
+    Krypter.Krypt crypt;
 
     public Connect(String ip, int port, Message msg) {
         //neueVerbindung("localhost", 9876);
         this.port = port;
         this.ip = ip;
         this.msg = msg;
+        this.waitforrequest = true;
+    }
 
+    public Connect(String ip, int port, Message msg, Connect co) {
+        this.port = port;
+        this.ip = ip;
+        this.msg = msg;
+        this.waitforrequest = false;
     }
 
     public void run() {
 
-        Socket socket = null;
+        if (msg.getMessageType() != MessageType.AUTHREQUEST && !msg.getString(Message.T_AUTHKEY).equals("")) {
+            Connect c = new Connect(ip, port, new Message(MessageType.AUTHREQUEST, msg.getString(Message.T_BENUTZER), msg.getString(Message.T_HASHEDPW), false));
+            c.start();
+        }
+
+        while (waitforrequest) {
+
+        }
 
         try {
 
@@ -66,13 +82,13 @@ public class Connect extends Thread {
                 SecretKey aesKey = new SecretKeySpec(encodedKey, "AES");
 
                 System.out.println("Key erstellt...");
-                Krypter.Krypt crypt = new Krypt(aesKey, "AES");
+                crypt = new Krypt(aesKey, "AES");
 
                 PrintWriter write_output = new PrintWriter(socket.getOutputStream());
                 System.out.println("Ausgabe geöffnet...");
                 read_input = new BufferedReader(new InputStreamReader(fis));
                 System.out.println("Eingabe geöffnet...");
-                String vermsg = crypt.encrypt(msg.makeMessage());
+                String vermsg = crypt.encrypt(msg.getMessageNHash());
 
                 write_output.println(vermsg.length());
                 write_output.println(vermsg);
@@ -89,18 +105,16 @@ public class Connect extends Thread {
                 while (true) {
                     input = input + read_input.readLine();
                     if (input.length() >= leng - breaks) {
-                        if (input != null) {
 
-                            input = crypt.decrypt(input);
-                            System.out.println(input);
-                            if (input.equals("ok")) {
-                                break;
-                            } else {
-                                if (input.startsWith("gamekey:")) {
-                                    System.out.println("gamekey");
-                                }
-                            }
+                        input = crypt.decrypt(input);
+                        System.out.println(input);
+                        Message m = new Message(input);
+                        if (m.getMessageType().equals(MessageType.CLOSESESSION)) {
+                            break;
+                        } else {
+
                         }
+
                     } else {
                         input = input + "\n";
                         breaks++;
@@ -116,4 +130,41 @@ public class Connect extends Thread {
 
         }
     }
+
+    public void setAuthKeyFromRequest(String authkey) {
+        msg.setString(Message.T_AUTHKEY, authkey);
+        Controls.Control.setAuthKey(authkey);
+        waitforrequest = false;
+    }
+
+    public boolean doEvent(Message msg) {
+        if (isUnveraendert(msg)) {
+            switch (msg.getMessageType()) {
+                case NOAUTH:
+                    System.out.println("NoAuth..");
+                    try {
+                        PrintWriter pw = new PrintWriter(socket.getOutputStream());
+                        Message me = new Message(MessageType.AUTHREQUEST, Controls.Control.getAnmeldedaten()[0], Controls.Control.getAnmeldedaten()[1], false);
+                        pw.println(crypt.encrypt(me.getMessageNHash()));
+                        pw.flush();
+                        return true;
+                    } catch (Exception ex) {
+
+                    }
+                case AUTHRESPONSE:
+                    System.out.println("AuthResponse...");
+            }
+        }
+        return false;
+    }
+
+    private boolean isUnveraendert(Message msg) {
+        boolean erg = false;
+        String check = Hasher.ToMD5(msg.getMessage());
+        if (check.equals(msg.getString(Message.T_HASH))) {
+            erg = true;
+        }
+        return erg;
+    }
+
 }

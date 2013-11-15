@@ -1,10 +1,13 @@
 package Controls;
 
+import Connection.Connect;
 import Zeichenobjekte.Schlange;
 import Zeichenobjekte.Feld;
 import Enums.EnumDirection;
 import Enums.EnumGameStatus;
 import Enums.EnumSchwierigkeit;
+import MessagePackage.Enums.MessageType;
+import MessagePackage.Message;
 import Standardpackage.Anmeldung;
 import Standardpackage.GameStatus;
 import Standardpackage.MainGUI;
@@ -28,24 +31,24 @@ import javax.swing.Timer;
  */
 public class Control {
 
-    private MainGUI mgui;
+    private final MainGUI mgui;
     private Schlange sSnake;
     private Feld[][] Spielfeld;
-    private Graphics zeichenflaeche;
+    private final Graphics zeichenflaeche;
     private Feld aktuellesZiel;
     int spielfeldX, spielfeldY;
     int pixelgroese;
     private Timer timer = null;
     private Punkte pkt = null;
-    private Zeichencontrol zcnt;
-    private ThemeControl tcnt;
+    private final Zeichencontrol zcnt;
+    private final ThemeControl tcnt;
     private Schwierigkeit schwierigkeit;
     private GameStatus gamestatus;
     private SoundController scnt;
     private boolean ton = true;
-    private String sessionkey;
-    private String user;
-    private String pw;
+    private static String sessionkey = "";
+    private static String user;
+    private static String pw;
 
     public Control(MainGUI mGUI) {
         this.mgui = mGUI;
@@ -62,16 +65,24 @@ public class Control {
         String[] amld = readAnmeldedaten();
         user = amld[0];
         pw = amld[1];
-        
+
     }
 
-    public String[] getAnmeldedaten(){
+    public static String[] getAnmeldedaten() {
         String[] s = new String[2];
         s[0] = user;
         s[1] = pw;
         return s;
     }
-    
+
+    public String getAuthKey() {
+        return sessionkey;
+    }
+
+    public static void setAuthKey(String auth) {
+        sessionkey = auth;
+    }
+
     public String[] readAnmeldedaten() {
         String[] erg = new String[2];
         File f = new File("resources//login");
@@ -94,7 +105,7 @@ public class Control {
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
-        
+
         return erg;
     }
 

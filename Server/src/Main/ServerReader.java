@@ -7,11 +7,11 @@ package Main;
 
 import Database.DB_Connect;
 import Database.DB_Getter_Operations;
+import Database.DB_Setter_Operations;
 import Krypter.Hasher;
 import Krypter.Krypt;
-import Message.HighscoreMessage;
-import Message.LoginRequestMessage;
-import Message.Message;
+import MessagePackage.Enums.MessageType;
+import MessagePackage.Message;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -31,6 +31,7 @@ public class ServerReader extends Thread {
     private Socket socket;
     private ArrayList<ServerReader> lsr;
     private DB_Connect dbc;
+    private Krypt crypt;
 
     public ServerReader(Socket socket, ArrayList<ServerReader> lsr, DB_Connect dbc) {
         this.socket = socket;
@@ -59,7 +60,7 @@ public class ServerReader extends Thread {
 
             pw.flush();
             System.out.println("Key gesendet...");
-            Krypt crypt = new Krypt(aesKey, "AES");
+            crypt = new Krypt(aesKey, "AES");
             BufferedReader read_input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             System.out.println("Reader geöffnet...");
 
@@ -73,27 +74,21 @@ public class ServerReader extends Thread {
                 if (input.length() >= leng - breaks) {
 
                     input = crypt.decrypt(input);
-                    if (input != null) {
-                        if (input.startsWith("benutzer:")) {
-                            //Message erstellen.
-                            System.out.println("Lese Message...");
-                            System.out.println(input);
-                            HighscoreMessage m = new HighscoreMessage(input);
-                            System.out.println("Message: ");
-                            System.out.println("Benuter: " + m.getBenutzer());
-                            System.out.println("PW: " + m.getPasswort());
-                            System.out.println("Punkte:" + m.getPunkte());
-                            if (!doEvent(0, m)) {
-                                break;
-                            }
-                        } else {
-                            if (input.equals("loginrequest:")) {
-                                LoginRequestMessage m = new LoginRequestMessage(input);
-                                if (!doEvent(0, m)) {
-                                    break;
-                                }
-                            }
+                    if (input.startsWith(Message.T_TYPE + ":")) {
+                        //Message erstellen.
+                        System.out.println("Lese Message...");
+                        System.out.println(input);
+                        Message m = new Message(input);
+                        System.out.println("Message: ");
+                        System.out.println("Benuter: " + m.getString(Message.T_BENUTZER));
+                        System.out.println("PW: " + m.getString(Message.T_HASHEDPW));
+                        System.out.println("Punkte:" + m.getString(Message.T_POINTS));
+                        if (!doEvent(m)) {
+                            input = "";
+                            break;
                         }
+                    } else {
+
                     }
                 } else {
                     input = input + "\n";
@@ -101,8 +96,8 @@ public class ServerReader extends Thread {
                 }
             }
             System.out.println("Schreibe fertig...");
-
-            String returnmsg = crypt.encrypt("ok");
+            Message cs = new Message(MessageType.CLOSESESSION, "", false);
+            String returnmsg = crypt.encrypt(cs.getMessageNHash());
 
             pw.println(returnmsg.length());
             pw.println(returnmsg);
@@ -121,42 +116,47 @@ public class ServerReader extends Thread {
 
     }
 
-    public boolean doEvent(int type, Message msg) {
+    public boolean doEvent(Message msg) {
         if (isUnveraendert(msg)) {
-            switch (type) {
-                case 0:
+            switch (msg.getMessageType()) {
+                case HIGHSCORE:
                     System.out.println("Highscore..");
-                    if (DB_Getter_Operations.isUserValid(dbc, msg.getBenutzer(), msg.getPasswort())) {
-                        break;
+                    if (isUserValid(msg)) {
+                        if (msg.getString(Message.T_AUTHKEY).equals("") == false) {
+                            DB_Setter_Operations.submitHighscore(dbc, DB_Getter_Operations.getUserID(dbc, msg.getString(Message.T_AUTHKEY)), msg.getInt(Message.T_POINTS));
+                        } else {
+                            //Authkey schicken/Anforderung eines Loginrequests
+                            System.out.println("Kein Authkey vorhanden...");
+                        }
                     }
-                case 1:
-                    System.out.println("Loginrequest");
-                    break;
+                case AUTHREQUEST:
+                    System.out.println("Authrequest");
+                    try {
+                        PrintWriter pw = new PrintWriter(socket.getOutputStream());
+                        Message me = new Message(MessageType.AUTHRESPONSE, "", "", false);
+                        pw.println(crypt.encrypt(me.getMessageNHash()));
+                        pw.flush();
+                        return true;
+                    } catch (Exception ex) {
+
+                    }
+                    return true;
             }
         }
         return false;
     }
 
-    private boolean isUnveraendert(int type, Message msg) {
+    private boolean isUnveraendert(Message msg) {
         boolean erg = false;
-        String hashit = "benutzer:\"" + msg.getBenutzer() + "\",passwort:\"" + msg.getPasswort() + "\",punkte:\"" /* + msg.getPunkte()*/ + "\"";
-        String check = Hasher.ToMD5(hashit);
-        switch (type) {
-            case 0:
-                System.out.println("Highscore..");
-                if (DB_Getter_Operations.isUserValid(dbc, msg.getBenutzer(), msg.getPasswort())) {
-                    break;
-                }
-            case 1:
-                System.out.println("Loginrequest");
-                break;
-        }
-
-        if (check.equals(msg.getHash())) {
+        String check = Hasher.ToMD5(msg.getMessage());
+        if (check.equals(msg.getString(Message.T_HASH))) {
             erg = true;
         }
-
         return erg;
+    }
+
+    private boolean isUserValid(Message msg) {
+        return DB_Getter_Operations.isUserValid(dbc, msg.getString(Message.T_BENUTZER), msg.getString(Message.T_HASH));
     }
 
 }
