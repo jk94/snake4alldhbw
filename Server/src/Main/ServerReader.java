@@ -20,6 +20,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.security.Key;
 import java.util.ArrayList;
+import java.util.Random;
 import javax.crypto.KeyGenerator;
 
 /**
@@ -32,6 +33,7 @@ public class ServerReader extends Thread {
     private ArrayList<ServerReader> lsr;
     private DB_Connect dbc;
     private Krypt crypt;
+    private OutputStream op;
 
     public ServerReader(Socket socket, ArrayList<ServerReader> lsr, DB_Connect dbc) {
         this.socket = socket;
@@ -47,8 +49,7 @@ public class ServerReader extends Thread {
             Key aesKey = keygen.generateKey();
             byte[] bytes = aesKey.getEncoded();
             System.out.println("Key erstellt...");
-
-            OutputStream op = socket.getOutputStream();
+            op = socket.getOutputStream();
             OutputStreamWriter keyfos = new OutputStreamWriter(op);
             PrintWriter pw = new PrintWriter(op);
 
@@ -84,8 +85,13 @@ public class ServerReader extends Thread {
                         System.out.println("PW: " + m.getString(Message.T_HASHEDPW));
                         System.out.println("Punkte:" + m.getString(Message.T_POINTS));
                         if (!doEvent(m)) {
-                            input = "";
+
                             break;
+                        } else {
+                            input = read_input.readLine();
+                            leng = Integer.parseInt(input);
+                            input = "";
+                            breaks = 0;
                         }
                     } else {
 
@@ -96,7 +102,7 @@ public class ServerReader extends Thread {
                 }
             }
             System.out.println("Schreibe fertig...");
-            Message cs = new Message(MessageType.CLOSESESSION, "", false);
+            Message cs = new Message(MessageType.CLOSESESSION);
             String returnmsg = crypt.encrypt(cs.getMessageNHash());
 
             pw.println(returnmsg.length());
@@ -117,11 +123,12 @@ public class ServerReader extends Thread {
     }
 
     public boolean doEvent(Message msg) {
+        System.out.println("DoEvent");
         if (isUnveraendert(msg)) {
             switch (msg.getMessageType()) {
                 case HIGHSCORE:
                     System.out.println("Highscore..");
-                    if (isUserValid(msg)) {
+                    if (isUserValid(msg, true)) {
                         if (msg.getString(Message.T_AUTHKEY).equals("") == false) {
                             DB_Setter_Operations.submitHighscore(dbc, DB_Getter_Operations.getUserID(dbc, msg.getString(Message.T_AUTHKEY)), msg.getInt(Message.T_POINTS));
                         } else {
@@ -130,13 +137,23 @@ public class ServerReader extends Thread {
                         }
                     }
                 case AUTHREQUEST:
-                    System.out.println("Authrequest");
+                    System.out.println("Authrequest..");
                     try {
-                        PrintWriter pw = new PrintWriter(socket.getOutputStream());
-                        Message me = new Message(MessageType.AUTHRESPONSE, "", "", false);
-                        pw.println(crypt.encrypt(me.getMessageNHash()));
-                        pw.flush();
-                        return true;
+                        if (isUserValid(msg, false)) {
+                            String erg = makeAuthKey(msg);
+                            DB_Setter_Operations.setLoginKey(dbc, DB_Getter_Operations.getUserID(dbc, msg.getString(Message.T_BENUTZER), msg.getString(Message.T_HASHEDPW)), erg);
+                            PrintWriter pw = new PrintWriter(op);
+                            Message me = new Message(MessageType.AUTHRESPONSE, erg, false);
+
+                            String output = crypt.encrypt(me.getMessageNHash());
+
+                            pw.println(output.length());
+                            pw.println(output);
+                            pw.flush();
+                            pw.close();
+                            System.out.println("AuthResponse...");
+                        }
+
                     } catch (Exception ex) {
 
                     }
@@ -155,8 +172,18 @@ public class ServerReader extends Thread {
         return erg;
     }
 
-    private boolean isUserValid(Message msg) {
-        return DB_Getter_Operations.isUserValid(dbc, msg.getString(Message.T_BENUTZER), msg.getString(Message.T_HASH));
+    private boolean isUserValid(Message msg, boolean auth) {
+        if (auth) {
+            return DB_Getter_Operations.isUserValid(dbc, msg.getString(Message.T_AUTHKEY));
+        } else {
+            return DB_Getter_Operations.isUserValid(dbc, msg.getString(Message.T_BENUTZER), msg.getString(Message.T_HASHEDPW));
+        }
+    }
+
+    private String makeAuthKey(Message msg) {
+        Random r = new Random();
+        String erg = Hasher.ToMD5(msg.getString(Message.T_BENUTZER) + msg.getString(Message.T_HASHEDPW) + String.valueOf(1 + r.nextInt(1024)));
+        return erg;
     }
 
 }

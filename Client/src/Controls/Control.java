@@ -6,6 +6,7 @@ import Zeichenobjekte.Feld;
 import Enums.EnumDirection;
 import Enums.EnumGameStatus;
 import Enums.EnumSchwierigkeit;
+import Krypter.Hasher;
 import MessagePackage.Enums.MessageType;
 import MessagePackage.Message;
 import Standardpackage.Anmeldung;
@@ -65,6 +66,8 @@ public class Control {
         String[] amld = readAnmeldedaten();
         user = amld[0];
         pw = amld[1];
+        Connection.Connect c = new Connect("127.0.0.1", 9876, new Message(MessageType.AUTHREQUEST, user, Hasher.ToMD5(pw), false));
+        c.start();
 
     }
 

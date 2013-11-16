@@ -58,11 +58,16 @@ public class Message {
 
     public Message(MessageType TYPE) {
         this.TYPE = TYPE;
+        Werte = new String[1][2];
+        Werte[0][0] = T_TYPE;
+        Werte[0][1] = this.TYPE.toString();
     }
 
     public String getMessageNHash() {
-        String erg = getMessage();
-        erg = erg + Hasher.ToMD5(erg);
+        String terg = getMessage();
+        String erg;
+        erg = terg + T_HASH + TRENN_VONBEZ;
+        erg = erg + Hasher.ToMD5(terg) + TRENN_PROPERTY;
         return erg;
     }
 
@@ -70,7 +75,9 @@ public class Message {
         String erg;
         erg = T_TYPE + TRENN_VONBEZ + getMessageType().toString() + TRENN_PROPERTY;
         for (int i = 1; i < Werte.length; i++) {
-            erg = erg + Werte[i][0].toUpperCase() + TRENN_VONBEZ + Werte[i][1] + TRENN_PROPERTY;
+            if (!Werte[i][0].equals(T_HASH)) {
+                erg = erg + Werte[i][0].toUpperCase() + TRENN_VONBEZ + Werte[i][1] + TRENN_PROPERTY;
+            }
         }
         return erg;
     }

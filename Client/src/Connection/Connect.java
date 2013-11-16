@@ -52,9 +52,12 @@ public class Connect extends Thread {
 
     public void run() {
 
-        if (msg.getMessageType() != MessageType.AUTHREQUEST && !msg.getString(Message.T_AUTHKEY).equals("")) {
+        if (msg.getMessageType() != MessageType.AUTHREQUEST && msg.getString(Message.T_AUTHKEY).equals("")) {
+            System.out.println(msg.getMessage());
             Connect c = new Connect(ip, port, new Message(MessageType.AUTHREQUEST, msg.getString(Message.T_BENUTZER), msg.getString(Message.T_HASHEDPW), false));
             c.start();
+        } else {
+            waitforrequest = false;
         }
 
         while (waitforrequest) {
@@ -88,36 +91,48 @@ public class Connect extends Thread {
                 System.out.println("Ausgabe geöffnet...");
                 read_input = new BufferedReader(new InputStreamReader(fis));
                 System.out.println("Eingabe geöffnet...");
+                System.out.println(msg.getMessageNHash());
                 String vermsg = crypt.encrypt(msg.getMessageNHash());
 
                 write_output.println(vermsg.length());
                 write_output.println(vermsg);
                 write_output.flush();
                 System.out.println("Message geschickt...");
-
-                System.out.println("Input lesen...");
                 read_input.readLine();
-                String input = read_input.readLine();
+                System.out.println("Input lesen...");
 
-                int leng = Integer.parseInt(input);
-                input = "";
-                int breaks = 0;
-                while (true) {
-                    input = input + read_input.readLine();
-                    if (input.length() >= leng - breaks) {
+                String input;
+                boolean exit = false;
 
-                        input = crypt.decrypt(input);
-                        System.out.println(input);
-                        Message m = new Message(input);
-                        if (m.getMessageType().equals(MessageType.CLOSESESSION)) {
-                            break;
+                while (!exit) {
+                    int breaks = 0;
+
+                    input = read_input.readLine();
+                    int leng = Integer.parseInt(input);
+                    input = "";
+
+                    while (true) {
+                        input = input + read_input.readLine();
+                        if (input.length() >= leng - breaks) {
+
+                            input = crypt.decrypt(input);
+
+                            Message m = new Message(input);
+                            if (m.getMessageType().equals(MessageType.CLOSESESSION)) {
+                                break;
+                            } else {
+                                if (!doEvent(m)) {
+                                    exit = true;
+                                    break;
+                                } else {
+                                    break;
+                                }
+                            }
+
                         } else {
-
+                            input = input + "\n";
+                            breaks++;
                         }
-
-                    } else {
-                        input = input + "\n";
-                        breaks++;
                     }
                 }
                 write_output.close();
@@ -151,8 +166,11 @@ public class Connect extends Thread {
                     } catch (Exception ex) {
 
                     }
+                    break;
                 case AUTHRESPONSE:
-                    System.out.println("AuthResponse...");
+                    System.out.println("AuthResponse: " + msg.getString(Message.T_AUTHKEY) +" ...");
+                    Controls.Control.setAuthKey(msg.getString(Message.T_AUTHKEY));
+                    break;
             }
         }
         return false;
@@ -161,6 +179,7 @@ public class Connect extends Thread {
     private boolean isUnveraendert(Message msg) {
         boolean erg = false;
         String check = Hasher.ToMD5(msg.getMessage());
+
         if (check.equals(msg.getString(Message.T_HASH))) {
             erg = true;
         }

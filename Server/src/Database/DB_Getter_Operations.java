@@ -26,10 +26,7 @@ public class DB_Getter_Operations {
 
             if (erg != null) {
                 erg.first();
-
                 if (erg.getString("u_pw").equals(pw)) {
-                    System.out.println("User: " + erg.getString("u_email"));
-                    System.out.println("Pass OK");
                     eerg = true;
                 } else {
                     System.err.println("Pass not OK");
@@ -62,7 +59,7 @@ public class DB_Getter_Operations {
         PreparedStatement stmt = null;
         int eerg = -1;
         try {
-            stmt = dbc.getTheConnection().prepareStatement("SELECT u_id FROM snakedhbw.u_user WHERE u_email = ? AND snakedhbw.u_pw = ?");
+            stmt = dbc.getTheConnection().prepareStatement("SELECT u_id FROM snakedhbw.u_user WHERE u_email = ? AND u_pw = ?");
             stmt.setString(1, user);
             stmt.setString(2, pw);
 
@@ -70,7 +67,6 @@ public class DB_Getter_Operations {
 
             if (erg != null) {
                 erg.first();
-                System.out.println(erg.getInt("u_id"));
                 eerg = erg.getInt("u_id");
             }
         } catch (SQLException ex) {
