@@ -17,7 +17,8 @@ public class DB_Setter_Operations {
     public static void submitHighscore(DB_Connect dbc, int u_id, int punkte) {
         PreparedStatement stmt = null;
         try {
-            stmt = dbc.getTheConnection().prepareStatement("INSERT INTO snakedhbw.highscores (`score`, `user_id`) VALUES (?,?)");
+            System.out.println(punkte);
+            stmt = dbc.getTheConnection().prepareStatement("INSERT INTO `snakedhbw`.`highscores` (`score`, `user_id`) VALUES (?,?);");
             stmt.setInt(1, punkte);
             stmt.setInt(2, u_id);
         } catch (SQLException ex) {

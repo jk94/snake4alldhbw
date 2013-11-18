@@ -84,7 +84,7 @@ public class Message {
 
     public void addString(String bez, String wert) {
         String[][] erg = new String[Werte.length + 1][2];
-        for (int i = 0; i < erg.length - 2; i++) {
+        for (int i = 0; i < Werte.length; i++) {
             erg[i][0] = Werte[i][0];
             erg[i][1] = Werte[i][1];
         }
@@ -96,7 +96,7 @@ public class Message {
 
     public void addInt(String bez, int wert) {
         String[][] erg = new String[Werte.length + 1][2];
-        for (int i = 0; i < erg.length - 2; i++) {
+        for (int i = 0; i < Werte.length; i++) {
             erg[i][0] = Werte[i][0];
             erg[i][1] = Werte[i][1];
         }

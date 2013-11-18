@@ -28,9 +28,9 @@ import javax.crypto.spec.SecretKeySpec;
  */
 public class Connect extends Thread {
 
-    private Message msg;
-    private int port;
-    private String ip;
+    private final Message msg;
+    private final int port;
+    private final String ip;
     private boolean waitforrequest = false;
     private Socket socket = null;
     Krypter.Krypt crypt;
@@ -50,6 +50,7 @@ public class Connect extends Thread {
         this.waitforrequest = false;
     }
 
+    @Override
     public void run() {
 
         if (msg.getMessageType() != MessageType.AUTHREQUEST && msg.getString(Message.T_AUTHKEY).equals("")) {
@@ -61,7 +62,6 @@ public class Connect extends Thread {
         }
 
         while (waitforrequest) {
-
         }
 
         try {
@@ -119,6 +119,7 @@ public class Connect extends Thread {
 
                             Message m = new Message(input);
                             if (m.getMessageType().equals(MessageType.CLOSESESSION)) {
+                                exit = true;
                                 break;
                             } else {
                                 if (!doEvent(m)) {
@@ -128,7 +129,6 @@ public class Connect extends Thread {
                                     break;
                                 }
                             }
-
                         } else {
                             input = input + "\n";
                             breaks++;

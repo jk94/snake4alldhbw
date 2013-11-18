@@ -80,6 +80,7 @@ public class Punkte {
 
     private void sendPunkte(String authkey) {
         Message m = new Message(MessageType.HIGHSCORE, authkey, false);
+        m.addInt(Message.T_POINTS, getPunktezaehler());
         Connect c = new Connect("127.0.0.1", 9876, m);
         c.start();
     }

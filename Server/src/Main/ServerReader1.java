@@ -27,15 +27,16 @@ import javax.crypto.KeyGenerator;
  *
  * @author User
  */
-public class ServerReader extends Thread {
+public class ServerReader1 extends Thread {
 
     private Socket socket;
-    private ArrayList<ServerReader> lsr;
+    private ArrayList<ServerReader1> lsr;
     private DB_Connect dbc;
     private Krypt crypt;
     private OutputStream op;
+    private boolean exit = false;
 
-    public ServerReader(Socket socket, ArrayList<ServerReader> lsr, DB_Connect dbc) {
+    public ServerReader1(Socket socket, ArrayList<ServerReader1> lsr, DB_Connect dbc) {
         this.socket = socket;
         this.lsr = lsr;
         this.dbc = dbc;
@@ -43,59 +44,53 @@ public class ServerReader extends Thread {
 
     public void run() {
         try {
-
+            System.out.println("Erstelle Key...");
             KeyGenerator keygen = KeyGenerator.getInstance("AES");
             keygen.init(128);
             Key aesKey = keygen.generateKey();
             byte[] bytes = aesKey.getEncoded();
-
+            System.out.println("Key erstellt...");
             op = socket.getOutputStream();
             OutputStreamWriter keyfos = new OutputStreamWriter(op);
             PrintWriter pw = new PrintWriter(op);
 
+            System.out.println("Sende Key...");
             op.write(bytes);
 
             op.flush();
             pw.write("\n");
 
             pw.flush();
-
+            System.out.println("Key gesendet...");
             crypt = new Krypt(aesKey, "AES");
             BufferedReader read_input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            System.out.println("Reader geöffnet...");
 
-            String input = read_input.readLine();
-            int leng = Integer.parseInt(input);
-            input = "";
-            int breaks = 0;
-            pw = new PrintWriter(op);
-            while (true) {
-                input = input + read_input.readLine();
-                if (input.length() >= leng - breaks) {
+            while (!exit) {
+                boolean lesemessage = true;
+                String input = read_input.readLine();
+                int leng = Integer.parseInt(input);
+                input = "";
+                int breaks = 0;
+                pw = new PrintWriter(op);
+                while (lesemessage) {
+                    input = input + read_input.readLine();
+                    if (input.length() >= leng - breaks) {
+                        input = crypt.decrypt(input);
+                        if (input.startsWith(Message.T_TYPE + ":")) {
+                            lesemessage = false;
+                            Message m = new Message(input);
+                        //DoEvents
 
-                    input = crypt.decrypt(input);
-                    if (input.startsWith(Message.T_TYPE + ":")) {
-                        //Message erstellen.
-
-                        Message m = new Message(input);
-
-                        if (!doEvent(m)) {
-
-                            break;
-                        } else {
-                            input = read_input.readLine();
-                            leng = Integer.parseInt(input);
-                            input = "";
-                            breaks = 0;
                         }
                     } else {
-
+                        input = input + "\n";
+                        breaks++;
                     }
-                } else {
-                    input = input + "\n";
-                    breaks++;
                 }
-            }
 
+            }
+            System.out.println("Schreibe fertig...");
             Message cs = new Message(MessageType.CLOSESESSION);
             String returnmsg = crypt.encrypt(cs.getMessageNHash());
 
@@ -108,7 +103,7 @@ public class ServerReader extends Thread {
             read_input.close();
             pw.close();
             socket.close();
-
+            System.out.println("Connection geschlossen");
             lsr.remove(this);
         } catch (Exception ex) {
             System.err.println(ex.getMessage());
@@ -117,22 +112,31 @@ public class ServerReader extends Thread {
     }
 
     public boolean doEvent(Message msg) {
-
+        System.out.println("DoEvent");
         if (isUnveraendert(msg)) {
             switch (msg.getMessageType()) {
                 case HIGHSCORE:
-
+                    System.out.println("Highscore..");
                     if (isUserValid(msg, true)) {
                         if (msg.getString(Message.T_AUTHKEY).equals("") == false) {
                             DB_Setter_Operations.submitHighscore(dbc, DB_Getter_Operations.getUserID(dbc, msg.getString(Message.T_AUTHKEY)), msg.getInt(Message.T_POINTS));
                         } else {
                             //Authkey schicken/Anforderung eines Loginrequests
+                            PrintWriter pw = new PrintWriter(op);
+                            Message m = new Message(MessageType.NOAUTH);
+                            try {
+                                String c = crypt.encrypt(m.getMessageNHash());
+                                pw.println(c.length());
+                                pw.println(c);
+                                pw.flush();
+                            } catch (Exception ex) {
+                            }
 
+                            System.out.println("Kein Authkey vorhanden...");
                         }
                     }
-                    break;
                 case AUTHREQUEST:
-
+                    System.out.println("Authrequest..");
                     try {
                         if (isUserValid(msg, false)) {
                             String erg = makeAuthKey(msg);
@@ -146,14 +150,13 @@ public class ServerReader extends Thread {
                             pw.println(output);
                             pw.flush();
                             pw.close();
-
+                            System.out.println("AuthResponse...");
                         }
 
                     } catch (Exception ex) {
 
                     }
                     return true;
-
             }
         }
         return false;
