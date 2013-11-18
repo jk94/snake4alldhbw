@@ -62,7 +62,6 @@ public class Zeichencontrol {
             if (i == 0 || i == Spielfeld[i].length - 1) {
                 for (int i2 = 0; i2 <= Spielfeld[i].length - 1; i2++) {
                     Spielfeld[i][i2].activate();
-                    //zeichenflaeche.fillRect(Spielfeld[i][i2].getX(), Spielfeld[i][i2].getY(), pixelgroese, pixelgroese);
                     g2d.drawImage(img.getWall(), Spielfeld[i][i2].getX(), Spielfeld[i][i2].getY(), null);
                 }
 
@@ -87,12 +86,10 @@ public class Zeichencontrol {
     }
 
     public void loescheButton(CButton bt) {
-        zeichenflaeche.clearRect(bt.getX(), bt.getY(), bt.getWidth()+1, bt.getHeight()+1);
+        zeichenflaeche.clearRect(bt.getX(), bt.getY(), bt.getWidth() + 1, bt.getHeight() + 1);
     }
 
     public void zeichneSchlange(Schlange sSnake) {
-        /*Feld abc = sSnake.getSchlangenliste().get(sSnake.getSchlangenliste().size()-1);
-         zeichenflaeche.clearRect(abc.getX(), abc.getY(), pixelgroese, pixelgroese); */
         Graphics2D g2d = (Graphics2D) zeichenflaeche;
         int sz = sSnake.getSchlangenliste().size();
         loescheAnzeigeSchlange(sSnake.getSchlangenliste());

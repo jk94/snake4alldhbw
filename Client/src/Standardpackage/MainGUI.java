@@ -23,9 +23,6 @@ public class MainGUI extends javax.swing.JFrame {
     public MainGUI() {
         initComponents();
         cnt = new Control(this);
-        while (cnt.equals(null)) {
-
-        }
     }
 
     /**
@@ -44,7 +41,6 @@ public class MainGUI extends javax.swing.JFrame {
         setBounds(new java.awt.Rectangle(0, 0, 0, 0));
         setMinimumSize(new java.awt.Dimension(520, 520));
         setPreferredSize(new java.awt.Dimension(500, 500));
-        setResizable(false);
         addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 formKeyTyped(evt);
@@ -118,12 +114,11 @@ public class MainGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_formKeyTyped
 
     private void canvas1KeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_canvas1KeyTyped
-        //System.out.println(evt.getKeyChar());
         EnumDirection dir = null;
         char eing = evt.getKeyChar();
         eing = Character.toLowerCase(eing);
 
-        //System.out.println(eing);
+        
         switch (eing) {
             case 'w':
                 dir = EnumDirection.HOCH;
@@ -167,6 +162,8 @@ public class MainGUI extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_canvas1KeyTyped
 
+    
+    
     private void canvas1FocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_canvas1FocusGained
         //cnt.start();
     }//GEN-LAST:event_canvas1FocusGained

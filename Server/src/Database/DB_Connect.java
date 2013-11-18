@@ -18,7 +18,10 @@ public class DB_Connect {
     public Connection openDB(String host, String db, String user, String password) {
         Connection erg = null;
         try {
+            System.out.println("Host: " + host + "\nDB: " + db);
+            System.out.println("User: " + user + "\nPW: " + password);
             erg = DriverManager.getConnection("jdbc:mysql://" + host + ":3306/" + db, user, password);
+            System.out.println(erg.toString());
             System.out.println("DB_Connect: Die Verbindung wurde hergestellt");
         } catch (SQLException ex) {
             System.err.println(ex.getMessage() + " Die Verbindung konnte nicht hergestellt werden!");

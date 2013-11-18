@@ -17,11 +17,14 @@ public class DB_Getter_Operations {
 
     public static boolean isUserValid(DB_Connect dbc, String email, String pw) {
         PreparedStatement stmt = null;
+        System.out.println("isUserValid (email/pw)");
+        System.out.println(email + " / " + pw);
         boolean eerg = false;
         try {
             stmt = dbc.getTheConnection().prepareStatement("SELECT * FROM snakedhbw.u_user WHERE u_email = ?");
-            stmt.setString(1, email);
 
+            stmt.setString(1, email);
+            System.out.println(stmt);
             ResultSet erg = dbc.executeSQLQuery(stmt);
 
             if (erg != null) {
@@ -38,10 +41,11 @@ public class DB_Getter_Operations {
     }
 
     public static boolean isUserValid(DB_Connect dbc, String authkey) {
+        System.out.println("isUserValid (authkey)");
         PreparedStatement stmt = null;
         boolean eerg = false;
         try {
-            stmt = dbc.getTheConnection().prepareStatement("SELECT * FROM snakedhbw.u_user WHERE u_authkey = ?");
+            stmt = dbc.getTheConnection().prepareStatement("SELECT * FROM snakedhbw.u_user WHERE u_gamekey = ?");
             stmt.setString(1, authkey);
 
             ResultSet erg = dbc.executeSQLQuery(stmt);
@@ -55,12 +59,13 @@ public class DB_Getter_Operations {
         return eerg;
     }
 
-    public static int getUserID(DB_Connect dbc, String user, String pw) {
+    public static int getUserID(DB_Connect dbc, String email, String pw) {
         PreparedStatement stmt = null;
+        System.out.println("getUserID (usr,pw)");
         int eerg = -1;
         try {
             stmt = dbc.getTheConnection().prepareStatement("SELECT u_id FROM snakedhbw.u_user WHERE u_email = ? AND u_pw = ?");
-            stmt.setString(1, user);
+            stmt.setString(1, email);
             stmt.setString(2, pw);
 
             ResultSet erg = dbc.executeSQLQuery(stmt);
@@ -76,9 +81,10 @@ public class DB_Getter_Operations {
 
     public static int getUserID(DB_Connect dbc, String authkey) {
         PreparedStatement stmt = null;
+        System.out.println("isUserValid (authkey)");
         int eerg = -1;
         try {
-            stmt = dbc.getTheConnection().prepareStatement("SELECT u_id FROM snakedhbw.u_user WHERE u_authkey = ?");
+            stmt = dbc.getTheConnection().prepareStatement("SELECT u_id FROM snakedhbw.u_user WHERE u_gamekey = ?");
             stmt.setString(1, authkey);
 
             ResultSet erg = dbc.executeSQLQuery(stmt);

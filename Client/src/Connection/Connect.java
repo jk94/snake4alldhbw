@@ -36,7 +36,7 @@ public class Connect extends Thread {
     Krypter.Krypt crypt;
 
     public Connect(String ip, int port, Message msg) {
-        //neueVerbindung("localhost", 9876);
+
         this.port = port;
         this.ip = ip;
         this.msg = msg;
@@ -54,7 +54,6 @@ public class Connect extends Thread {
     public void run() {
 
         if (msg.getMessageType() != MessageType.AUTHREQUEST && msg.getString(Message.T_AUTHKEY).equals("")) {
-            System.out.println(msg.getMessage());
             Connect c = new Connect(ip, port, new Message(MessageType.AUTHREQUEST, msg.getString(Message.T_BENUTZER), msg.getString(Message.T_HASHEDPW), false));
             c.start();
         } else {
@@ -79,27 +78,24 @@ public class Connect extends Thread {
                 byte[] encodedKey = new byte[16];
 
                 fis.read(encodedKey);
-                System.out.println("Key gelesen...");
 
                 // generiere Key
                 SecretKey aesKey = new SecretKeySpec(encodedKey, "AES");
-
-                System.out.println("Key erstellt...");
                 crypt = new Krypt(aesKey, "AES");
 
                 PrintWriter write_output = new PrintWriter(socket.getOutputStream());
-                System.out.println("Ausgabe geöffnet...");
+                
                 read_input = new BufferedReader(new InputStreamReader(fis));
-                System.out.println("Eingabe geöffnet...");
-                System.out.println(msg.getMessageNHash());
+                
+                
                 String vermsg = crypt.encrypt(msg.getMessageNHash());
 
                 write_output.println(vermsg.length());
                 write_output.println(vermsg);
                 write_output.flush();
-                System.out.println("Message geschickt...");
+                
                 read_input.readLine();
-                System.out.println("Input lesen...");
+                
 
                 String input;
                 boolean exit = false;
@@ -138,7 +134,7 @@ public class Connect extends Thread {
                 write_output.close();
                 read_input.close();
                 socket.close();
-                System.out.println("Connection closed");
+                
             } catch (Exception ex) {
                 System.err.println(ex.getMessage());
             }
@@ -156,7 +152,7 @@ public class Connect extends Thread {
         if (isUnveraendert(msg)) {
             switch (msg.getMessageType()) {
                 case NOAUTH:
-                    System.out.println("NoAuth..");
+                    
                     try {
                         PrintWriter pw = new PrintWriter(socket.getOutputStream());
                         Message me = new Message(MessageType.AUTHREQUEST, Controls.Control.getAnmeldedaten()[0], Controls.Control.getAnmeldedaten()[1], false);
@@ -168,7 +164,7 @@ public class Connect extends Thread {
                     }
                     break;
                 case AUTHRESPONSE:
-                    System.out.println("AuthResponse: " + msg.getString(Message.T_AUTHKEY) +" ...");
+                    
                     Controls.Control.setAuthKey(msg.getString(Message.T_AUTHKEY));
                     break;
             }

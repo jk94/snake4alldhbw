@@ -15,10 +15,11 @@ import java.sql.SQLException;
 public class DB_Setter_Operations {
 
     public static void submitHighscore(DB_Connect dbc, int u_id, int punkte) {
+        System.out.println("SubmitHighscore");
         PreparedStatement stmt = null;
         try {
             System.out.println(punkte);
-            stmt = dbc.getTheConnection().prepareStatement("INSERT INTO `snakedhbw`.`highscores` (`score`, `user_id`) VALUES (?,?);");
+            stmt = dbc.getTheConnection().prepareStatement("INSERT INTO snakedhbw.highscores (score, user_id) VALUES (?,?)");
             stmt.setInt(1, punkte);
             stmt.setInt(2, u_id);
         } catch (SQLException ex) {
@@ -27,9 +28,10 @@ public class DB_Setter_Operations {
     }
 
     public static void setLoginKey(DB_Connect dbc, int u_id, String auth) {
+        System.out.println("SetLoginKey");
         PreparedStatement stmt = null;
         try {
-            stmt = dbc.getTheConnection().prepareStatement("UPDATE snakedhbw.u_user SET u_authkey = ? WHERE u_id = ? LIMIT 1");
+            stmt = dbc.getTheConnection().prepareStatement("UPDATE snakedhbw.u_user SET u_gamekey = ? WHERE u_id = ? LIMIT 1");
             stmt.setString(1, auth);
             stmt.setInt(2, u_id);
         } catch (SQLException ex) {

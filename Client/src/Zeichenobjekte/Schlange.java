@@ -57,7 +57,6 @@ public class Schlange {
                     break;
             }
         }
-        //System.out.println(dir);
     }
 
     public void setKopf(Feld kopf) {

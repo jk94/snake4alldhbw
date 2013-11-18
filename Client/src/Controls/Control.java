@@ -66,7 +66,7 @@ public class Control {
         String[] amld = readAnmeldedaten();
         user = amld[0];
         pw = amld[1];
-        Connection.Connect c = new Connect("127.0.0.1", 9876, new Message(MessageType.AUTHREQUEST, user, Hasher.ToMD5(pw), false));
+        Connection.Connect c = new Connect("85.214.255.178", 9876, new Message(MessageType.AUTHREQUEST, user, Hasher.ToMD5(pw), false));
         c.start();
 
     }
@@ -131,7 +131,7 @@ public class Control {
     public void toggleTon() {
         this.ton = !this.ton;
         zcnt.zeichneTonIcon(new Point(Spielfeld[Spielfeld.length - 1][Spielfeld.length - 1].getX(), Spielfeld[Spielfeld.length - 1][Spielfeld.length - 1].getY()));
-        System.out.println(this.getClass().toString() + ": Tonwechsel");
+        
     }
 
     public int getFeldgroese() {

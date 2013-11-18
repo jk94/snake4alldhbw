@@ -21,7 +21,7 @@ public class Control {
     private final DB_Connect dbc;
 
     public Control() {
-        dbc = new DB_Connect("localhost", "snakedhbw", "snake", "jpWWI13");
+        dbc = new DB_Connect("localhost", "snakedhbw", "snakeserver", "jpWWI13A");
     }
 
     public void starten() {
@@ -32,14 +32,14 @@ public class Control {
             sSocket = new ServerSocket(9876);
             do {
                 Socket socket = sSocket.accept();
-                if (pz.exists()) {
-                    ServerReader sr = new ServerReader(socket, ServerReaderList, dbc);
-                    ServerReaderList.add(sr);
-                    sr.start();
-                } else {
-                    System.err.println("Keine Primes vorhanden.. Bitte nachinstallieren!");
-                    System.exit(0);
-                }
+                //if (pz.exists()) {
+                ServerReader sr = new ServerReader(socket, ServerReaderList, dbc);
+                ServerReaderList.add(sr);
+                sr.start();
+                //} else {
+                //  System.err.println("Keine Primes vorhanden.. Bitte nachinstallieren!");
+                //System.exit(0);
+                //}
             } while (true);
 
         } catch (Exception e) {
