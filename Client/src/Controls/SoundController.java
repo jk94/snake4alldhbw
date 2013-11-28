@@ -6,11 +6,13 @@
 package Controls;
 
 import java.io.File;
+import java.io.IOException;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.DataLine;
+import javax.sound.sampled.LineUnavailableException;
 
 /**
  *
@@ -93,23 +95,28 @@ public class SoundController {
     }
 
     private void playSound(AudioInputStream ais) {
-        if (cnt.getTon()) {
-            try {
+        if (false) {
+            if (cnt.getTon()) {
+                try {
 
-                AudioFormat af = ais.getFormat();
-                int size = (int) (af.getFrameSize() * ais.getFrameLength());
-                byte[] audio = new byte[size];
-                DataLine.Info info = new DataLine.Info(Clip.class, af, size);
-                ais.read(audio, 0, size);
-
-                // for(int i=0; i < 32; i++) {
-                Clip clip = (Clip) AudioSystem.getLine(info);
-                clip.open(af, audio, 0, size);
-                clip.start();
-
-                // }
-            } catch (Exception e) {
-                e.printStackTrace();
+                    AudioFormat af = ais.getFormat();
+                    int size = (int) (af.getFrameSize() * ais.getFrameLength());
+                    byte[] audio = new byte[size];
+                    DataLine.Info info = new DataLine.Info(Clip.class, af, size);
+                    ais.read(audio, 0, size);
+                    try (Clip clip = (Clip) AudioSystem.getLine(info)) {
+                        clip.open(af, audio, 0, size);
+                        clip.start();
+                        while (clip.getFrameLength() > clip.getFramePosition()) {
+                        }
+                        clip.stop();
+                        clip.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (LineUnavailableException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }

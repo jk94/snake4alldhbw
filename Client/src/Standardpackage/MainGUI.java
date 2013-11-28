@@ -104,7 +104,7 @@ public class MainGUI extends javax.swing.JFrame {
     private void btn_StartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_StartActionPerformed
         btn_Start.setEnabled(false);
         btn_Start.setVisible(false);
-
+        canvas1.setLocation(0, 0);
         cnt.init();
         cnt.getZeichenControl().zeichneStartUp();
         startup = false;
@@ -118,7 +118,6 @@ public class MainGUI extends javax.swing.JFrame {
         char eing = evt.getKeyChar();
         eing = Character.toLowerCase(eing);
 
-        
         switch (eing) {
             case 'w':
                 dir = EnumDirection.HOCH;
@@ -162,8 +161,7 @@ public class MainGUI extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_canvas1KeyTyped
 
-    
-    
+
     private void canvas1FocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_canvas1FocusGained
         //cnt.start();
     }//GEN-LAST:event_canvas1FocusGained
@@ -216,6 +214,6 @@ public class MainGUI extends javax.swing.JFrame {
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_Start;
-    private java.awt.Canvas canvas1;
+    private static java.awt.Canvas canvas1;
     // End of variables declaration//GEN-END:variables
 }

@@ -1,0 +1,5 @@
+Bei isUserValid überprüfen ob bereits Validiert
+
+
+
+Für Connection API -> Prüfen ob Spiel gekauft

@@ -1,0 +1,2 @@
+Sound entfernt -> Zu viele Threads		| not Fixxed
+Login						| not Fixxed

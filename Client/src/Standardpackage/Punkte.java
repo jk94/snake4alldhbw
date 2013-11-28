@@ -73,7 +73,7 @@ public class Punkte {
     }
 
     public void gameOver(String authkey) {
-        //if (JOptionPane.showConfirmDialog(null, "Willst du deine Punkte an die Highscore übermitteln?", "Highscore", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE) == 0) {
+
         sendPunkte(authkey);
 
     }
