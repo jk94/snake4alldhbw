@@ -52,7 +52,6 @@ public class Connect extends Thread {
 
     @Override
     public void run() {
-
         if (msg.getMessageType() != MessageType.AUTHREQUEST && msg.getString(Message.T_AUTHKEY).equals("")) {
             Connect c = new Connect(ip, port, new Message(MessageType.AUTHREQUEST, msg.getString(Message.T_BENUTZER), msg.getString(Message.T_HASHEDPW), false));
             c.start();
